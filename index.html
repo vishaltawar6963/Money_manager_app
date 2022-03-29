@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Site</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-dark">
+
+
+
+    <div class="container ">
+        <div id="alert" class="alert">
+
+            <h1 class="text-center text-success">Balance : <span id="balance"></span></h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h1> Income</h1>
+                    </div>
+                    <div class="card-body">
+                        <input id="incomefrom" class="form-control my-4" type="text" placeholder="From">
+                        <input id="incomeamount" class="form-control my-4" type="number" placeholder="Amount">
+                        <button class="btn btn-success w-100" onclick="income()">Add</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h1 class="text-danger">Expence </h1>
+                    </div>
+                    <div class="card-body">
+                        <input id="expencefor" class="form-control my-4" type="text" placeholder="For">
+                        <input id="expenceamount" class="form-control my-4" type="number" placeholder="Amount">
+                        <button class="btn btn-danger w-100" onclick="expence()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id class="col-sm-6">
+                <h3 class="text-light">Total Income : <span id="totalIncome"></span> </h3>
+                <div id="incomeoutput"></div>
+            </div>
+            <div id class="col-sm-6">
+                <h3 class="text-light">Total Expence : <span id="totalExpence"></span></h3>
+
+                <div id="expenceoutput"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        var totalIncome = 0;
+        var totalExpence = 0; // JSON.parse(localStorage.getItem("income"))
+        var balance = 0;
+        var incomeArray = []
+        var expenceArray = []
+
+
+        //Start  // on page relode getting values from local storage and printing 
+        var parsedIncome = JSON.parse(localStorage.getItem("income"))
+        for (var i = 0; i < parsedIncome.length; i++) {
+            var parsedx = parsedIncome[i].incomeFrom
+            var parsedy = parsedIncome[i].Amount
+            totalIncome += parsedIncome[i].Amount
+
+            document.querySelector("#incomeoutput").innerHTML += `
+            <div class="alert alert-success d-flex justify-content-between">
+                <span >${parsedx}</span>
+                <span >${parsedy}</span>
+                </div>`
+
+
+        }
+
+        var parsedExpence = JSON.parse(localStorage.getItem("expence"))
+        for (var i = 0; i < parsedExpence.length; i++) {
+            var parseda = parsedExpence[i].expenceFor
+            var parsedb = parsedExpence[i].Amount
+            totalExpence += parsedExpence[i].Amount
+
+            document.querySelector("#expenceoutput").innerHTML += `
+            <div class="alert alert-danger d-flex justify-content-between">
+                <span >${parseda}</span>
+                <span >${parsedb}</span>
+                </div>`
+
+
+        }
+
+
+        document.querySelector("#totalIncome").innerHTML = totalIncome
+        document.querySelector("#totalExpence").innerHTML = totalExpence
+        balance = totalIncome - totalExpence
+        document.querySelector("#balance").innerHTML = balance
+
+        //End // on page relode getting values from local storage and printing 
+
+
+
+
+        function income() {
+            var x = document.querySelector("#incomefrom").value
+            var y = +document.querySelector("#incomeamount").value
+            totalIncome += y
+            document.querySelector("#totalIncome").innerText = totalIncome
+            balance = totalIncome - totalExpence
+            document.querySelector("#balance").innerHTML = balance
+            incomeArray = JSON.parse(localStorage.getItem("income"))
+
+            if (incomeArray == null) {
+                incomeArray = [{ incomeFrom: x, Amount: y }]
+
+                localStorage.setItem("income", JSON.stringify(incomeArray))
+            } else {
+
+                incomeArray.push({ incomeFrom: x, Amount: y })
+                localStorage.setItem("income", JSON.stringify(incomeArray))
+            }
+
+
+
+            // console.log(parsedx);
+            // console.log(parsedy);
+
+
+            document.querySelector("#incomeoutput").innerHTML += `
+            <div class="alert alert-success d-flex justify-content-between">
+                <span >${x}</span>
+                <span >${y}</span>
+                </div>`
+
+            document.getElementById("alert").classList.remove("alert-danger")
+            document.getElementById("alert").classList.add("alert-success")
+
+        }
+        function expence() {
+            var a = document.querySelector("#expencefor").value
+            var b = +document.querySelector("#expenceamount").value
+            totalExpence += b
+            document.querySelector("#totalExpence").innerText = totalExpence
+            balance = totalIncome - totalExpence
+            document.querySelector("#balance").innerHTML = balance
+            expenceArray = JSON.parse(localStorage.getItem("expence"))
+
+            if (expenceArray == null) {
+                expenceArray = [{ expenceFor: a, Amount: b }]
+
+                localStorage.setItem("expence", JSON.stringify(expenceArray))
+            } else {
+
+                expenceArray.push({ expenceFor: a, Amount: b })
+                localStorage.setItem("expence", JSON.stringify(expenceArray))
+            }
+
+            expenceArray.push({ expenceFor: a, Amount: b })
+            localStorage.setItem("expence", JSON.stringify(expenceArray))
+
+
+
+            document.querySelector("#expenceoutput").innerHTML += `
+                <div class="alert alert-danger d-flex justify-content-between">
+                    <span >${a}</span>
+                    <span >${b}</span>
+                </div> `
+
+            document.getElementById("alert").classList.remove("alert-success")
+            document.getElementById("alert").classList.add("alert-danger")
+
+        }
+
+
+
+        // function test() {
+        //     if (parsedIncome == null) {
+        //         return true;
+        //     } else {
+        //         return parsedIncome.length
+
+        //     }
+        // }
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
